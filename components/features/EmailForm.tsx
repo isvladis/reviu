@@ -14,11 +14,14 @@ export function EmailForm() {
     if (!form) return;
     const email = form.EMAIL as unknown as HTMLInputElement;
     if (!email.value) return;
-    // Build a plain HTML form outside React and submit it natively
+
+    // Open window first (in click context) so browsers don't block it
+    const win = window.open('about:blank', 'mailchimp');
+
     const nativeForm = document.createElement('form');
     nativeForm.method = 'POST';
     nativeForm.action = MAILCHIMP_URL;
-    nativeForm.target = '_blank';
+    nativeForm.target = 'mailchimp';
     nativeForm.style.display = 'none';
 
     const emailInput = document.createElement('input');
