@@ -1,3 +1,5 @@
+'use client';
+
 const MAILCHIMP_URL =
   'https://gmail.us3.list-manage.com/subscribe/post?u=a3ad581c8ea4c95dc89077764&id=6cdb696d18&f_id=00195ae2f0';
 
