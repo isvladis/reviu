@@ -11,7 +11,7 @@ const csp = [
   `connect-src 'self' https://${supabaseHost} wss://${supabaseHost} https://*.list-manage.com`,
   `frame-ancestors 'none'`,
   `base-uri 'self'`,
-  `form-action 'self'`,
+  `form-action 'self' https://*.list-manage.com`,
   `object-src 'none'`,
   `upgrade-insecure-requests`,
 ].join("; ");

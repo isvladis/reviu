@@ -1,50 +1,17 @@
-'use client';
-
-import { useRef, type FormEvent } from 'react';
-
 const MAILCHIMP_URL =
   'https://gmail.us3.list-manage.com/subscribe/post?u=a3ad581c8ea4c95dc89077764&id=6cdb696d18&f_id=00195ae2f0';
 
+// Honeypot anti-bot de Mailchimp: campo de texto fuera de pantalla que un
+// humano nunca rellena. El nombre es b_<u>_<id> y debe ir vacío.
+const HONEYPOT_NAME = 'b_a3ad581c8ea4c95dc89077764_6cdb696d18';
+
 export function EmailForm() {
-  const formRef = useRef<HTMLFormElement>(null);
-
-  function handleSubmit(e: FormEvent) {
-    e.preventDefault();
-    const form = formRef.current;
-    if (!form) return;
-    const email = form.EMAIL as unknown as HTMLInputElement;
-    if (!email.value) return;
-
-    // Open window first (in click context) so browsers don't block it
-    const win = window.open('about:blank', 'mailchimp');
-
-    const nativeForm = document.createElement('form');
-    nativeForm.method = 'POST';
-    nativeForm.action = MAILCHIMP_URL;
-    nativeForm.target = 'mailchimp';
-    nativeForm.style.display = 'none';
-
-    const emailInput = document.createElement('input');
-    emailInput.name = 'EMAIL';
-    emailInput.value = email.value;
-    nativeForm.appendChild(emailInput);
-
-    const honeypot = document.createElement('input');
-    honeypot.name = 'b_a3ad581c8ea4c95dc89077764_6cdb696d18';
-    honeypot.value = '';
-    nativeForm.appendChild(honeypot);
-
-    document.body.appendChild(nativeForm);
-    nativeForm.submit();
-    document.body.removeChild(nativeForm);
-  }
-
   return (
     <form
-      ref={formRef}
-      onSubmit={handleSubmit}
+      action={MAILCHIMP_URL}
+      method="post"
+      target="_blank"
       className="w-full max-w-md space-y-4"
-      noValidate
     >
       <div className="flex flex-col sm:flex-row gap-3">
         <input
@@ -67,6 +34,11 @@ export function EmailForm() {
         >
           Unirme
         </button>
+      </div>
+
+      {/* Honeypot: oculto a usuarios reales, no a bots. */}
+      <div aria-hidden="true" style={{ position: 'absolute', left: '-5000px' }}>
+        <input type="text" name={HONEYPOT_NAME} tabIndex={-1} defaultValue="" />
       </div>
     </form>
   );
