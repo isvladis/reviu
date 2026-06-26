@@ -35,26 +35,14 @@ export default function Home() {
             </p>
 
             <p className="text-lg leading-relaxed">
-              El reciclaje, tal como lo conocemos, no funciona. Separamos
-              envases, vidrio, papel… pero la mayoría acaba incinerada o
-              exportada. España no tiene un sistema de retorno de envases como
-              Alemania, donde devuelves la botella y recuperas tu depósito. Aquí
-              reciclamos la conciencia, no los materiales.
-            </p>
-
-            <p className="text-lg leading-relaxed">
-              Reviu nace para cambiar eso. No somos una empresa, ni una startup,
-              ni una app con inversores detrás. Somos un movimiento ciudadano.
-              Creemos que cada objeto merece un destino mejor que la basura:
-              reciclaje real, segunda vida en otra casa, reacondicionamiento en
-              un taller del barrio o donación a quien lo necesite.
+              El reciclaje, tal como lo conocemos, no funciona. Separamos envases, vidrio, papel… pero la mayoría acaba incinerada o exportada. Y los que no siguen ese camino a menudo terminan en manos de empresas que los destruyen, extraen sus materiales y los revenden a otras industrias buscando el beneficio económico, algo comprensible, pero que contribuye indirectamente al consumismo cuando existe una alternativa más honesta: no destruir el objeto y darle una nueva vida sin anteponer el lucro. España tampoco tiene un sistema de depósito, devolución y retorno de envases como el que llevan décadas aplicando países como Alemania, Suecia, Noruega, Finlandia, Dinamarca o los Países Bajos, donde devuelves la botella y recuperas tu depósito. Aquí reciclamos la conciencia, no los materiales.
             </p>
 
             <p className="text-lg leading-relaxed">
               Creemos en la trazabilidad: que puedas saber qué pasó con tu
               silla, tu bicicleta o tu cafetera después de cederla. Que la
-              persona que la recibe tenga nombre — un nombre de pila y un barrio,
-              nada más — y que eso baste para cerrar el círculo con dignidad.
+              persona que la recibe tenga nombre, un nombre de pila y un barrio,
+              nada más, y que eso baste para cerrar el círculo con dignidad.
             </p>
 
             <p className="text-lg leading-relaxed">
