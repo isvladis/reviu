@@ -39,6 +39,10 @@ export type Database = {
           avatar_url: string | null;
           bio: string | null;
           role: UserRole;
+          phone: string | null;
+          contact_email: boolean;
+          contact_phone: boolean;
+          contact_inapp: boolean;
           created_at: string;
           updated_at: string;
         };
@@ -50,6 +54,10 @@ export type Database = {
           avatar_url?: string | null;
           bio?: string | null;
           role?: UserRole;
+          phone?: string | null;
+          contact_email?: boolean;
+          contact_phone?: boolean;
+          contact_inapp?: boolean;
           created_at?: string;
           updated_at?: string;
         };
@@ -61,6 +69,10 @@ export type Database = {
           avatar_url?: string | null;
           bio?: string | null;
           role?: UserRole;
+          phone?: string | null;
+          contact_email?: boolean;
+          contact_phone?: boolean;
+          contact_inapp?: boolean;
           created_at?: string;
           updated_at?: string;
         };

@@ -7,7 +7,12 @@ import type { Database } from "@/types/supabase";
 const PUBLIC_PATHS = ["/", "/login", "/register", "/auth/callback"];
 
 // Rutas protegidas: el usuario debe tener sesión válida.
-const PROTECTED_PREFIXES = ["/dashboard", "/objects", "/moderacion"];
+const PROTECTED_PREFIXES = [
+  "/dashboard",
+  "/objects",
+  "/moderacion",
+  "/perfil",
+];
 
 // Rutas que además requieren rol de moderador (o admin).
 const MODERATOR_PREFIXES = ["/moderacion"];

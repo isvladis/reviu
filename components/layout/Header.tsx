@@ -28,7 +28,7 @@ export async function Header({ session }: Props = {}) {
 
   return (
     <header className="w-full py-6 px-6 md:px-8">
-      <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div className="max-w-6xl mx-auto flex items-center justify-between gap-4">
         <Link
           href="/"
           className="text-xl font-semibold tracking-tight"
@@ -37,28 +37,39 @@ export async function Header({ session }: Props = {}) {
           Reviu
         </Link>
 
-        {resolved ? (
-          <div className="flex items-center gap-4">
-            <span
-              className="text-sm font-medium"
-              style={{ color: "var(--color-text)" }}
-            >
-              {resolved.displayName}
-            </span>
-            <LogoutButton />
-          </div>
-        ) : (
+        <nav className="flex items-center gap-4">
           <Link
-            href="/login"
-            className="text-sm font-medium px-4 py-2 rounded-lg border-2 transition-colors"
-            style={{
-              borderColor: "var(--color-accent)",
-              color: "var(--color-accent)",
-            }}
+            href="/objetos"
+            className="text-sm font-medium"
+            style={{ color: "var(--color-text)" }}
           >
-            Entrar
+            Ver objetos
           </Link>
-        )}
+
+          {resolved ? (
+            <>
+              <Link
+                href="/perfil"
+                className="text-sm font-medium"
+                style={{ color: "var(--color-text)" }}
+              >
+                {resolved.displayName}
+              </Link>
+              <LogoutButton />
+            </>
+          ) : (
+            <Link
+              href="/login"
+              className="text-sm font-medium px-4 py-2 rounded-lg border-2 transition-colors"
+              style={{
+                borderColor: "var(--color-accent)",
+                color: "var(--color-accent)",
+              }}
+            >
+              Entrar
+            </Link>
+          )}
+        </nav>
       </div>
     </header>
   );

@@ -70,6 +70,25 @@ export default async function DashboardPage({
         </Link>
       </div>
 
+      <Link
+        href="/perfil"
+        className="rounded-xl border-2 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-[var(--color-bg-alt)]"
+        style={{ borderColor: "var(--color-border)" }}
+      >
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold">Mi perfil</h2>
+          <p style={{ color: "var(--color-muted)" }}>
+            Edita tu nombre, teléfono y preferencias de contacto.
+          </p>
+        </div>
+        <span
+          className="text-sm font-medium"
+          style={{ color: "var(--color-accent)" }}
+        >
+          Editar →
+        </span>
+      </Link>
+
       {isMod ? (
         <Link
           href="/moderacion"
