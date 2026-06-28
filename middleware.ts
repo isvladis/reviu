@@ -7,10 +7,19 @@ import type { Database } from "@/types/supabase";
 const PUBLIC_PATHS = ["/", "/login", "/register", "/auth/callback"];
 
 // Rutas protegidas: el usuario debe tener sesión válida.
-const PROTECTED_PREFIXES = ["/dashboard"];
+const PROTECTED_PREFIXES = ["/dashboard", "/objects", "/moderacion"];
+
+// Rutas que además requieren rol de moderador (o admin).
+const MODERATOR_PREFIXES = ["/moderacion"];
 
 function isProtected(pathname: string): boolean {
   return PROTECTED_PREFIXES.some(
+    (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
+  );
+}
+
+function requiresModerator(pathname: string): boolean {
+  return MODERATOR_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`),
   );
 }
@@ -62,6 +71,25 @@ export async function middleware(request: NextRequest) {
     url.pathname = "/dashboard";
     url.search = "";
     return NextResponse.redirect(url);
+  }
+
+  // Ruta de moderación: además de sesión, el perfil debe tener rol moderator/admin.
+  // RLS hace de segunda barrera en BD; este redirect es UX limpia + 1ª línea.
+  if (user && requiresModerator(pathname)) {
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("role")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const role = profile?.role;
+    if (role !== "moderator" && role !== "admin") {
+      const url = request.nextUrl.clone();
+      url.pathname = "/dashboard";
+      url.search = "";
+      url.searchParams.set("error", "no_autorizado");
+      return NextResponse.redirect(url);
+    }
   }
 
   // Permite explícitamente /auth/callback aunque haya o no sesión.

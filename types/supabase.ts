@@ -25,6 +25,8 @@ export type ExchangeStatus =
   | "completed"
   | "cancelled";
 
+export type UserRole = "user" | "moderator" | "admin";
+
 export type Database = {
   public: {
     Tables: {
@@ -36,6 +38,7 @@ export type Database = {
           city: string;
           avatar_url: string | null;
           bio: string | null;
+          role: UserRole;
           created_at: string;
           updated_at: string;
         };
@@ -46,6 +49,7 @@ export type Database = {
           city?: string;
           avatar_url?: string | null;
           bio?: string | null;
+          role?: UserRole;
           created_at?: string;
           updated_at?: string;
         };
@@ -56,6 +60,7 @@ export type Database = {
           city?: string;
           avatar_url?: string | null;
           bio?: string | null;
+          role?: UserRole;
           created_at?: string;
           updated_at?: string;
         };
@@ -137,6 +142,7 @@ export type Database = {
           approx_lat: number | null;
           approx_lng: number | null;
           status: ObjectStatus;
+          rejection_reason: string | null;
           validated_by: string | null;
           validated_at: string | null;
           created_at: string;
@@ -154,6 +160,7 @@ export type Database = {
           approx_lat?: number | null;
           approx_lng?: number | null;
           status?: ObjectStatus;
+          rejection_reason?: string | null;
           validated_by?: string | null;
           validated_at?: string | null;
           created_at?: string;
@@ -171,6 +178,7 @@ export type Database = {
           approx_lat?: number | null;
           approx_lng?: number | null;
           status?: ObjectStatus;
+          rejection_reason?: string | null;
           validated_by?: string | null;
           validated_at?: string | null;
           created_at?: string;
@@ -289,6 +297,7 @@ export type Database = {
     Enums: {
       object_status: ObjectStatus;
       exchange_status: ExchangeStatus;
+      user_role: UserRole;
     };
     CompositeTypes: Record<string, never>;
   };
