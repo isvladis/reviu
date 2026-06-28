@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 
 import { countPendingObjects } from "@/lib/supabase/moderation";
+import { countMyObjects } from "@/lib/supabase/my-objects";
 import { createClient } from "@/lib/supabase/server";
 
 export const metadata: Metadata = {
@@ -26,7 +27,10 @@ export default async function DashboardPage({
 
   const name = profile?.display_name ?? "Vecino/a";
   const isMod = profile?.role === "moderator" || profile?.role === "admin";
-  const pendingCount = isMod ? await countPendingObjects() : 0;
+  const [pendingCount, myObjectsCount] = await Promise.all([
+    isMod ? countPendingObjects() : Promise.resolve(0),
+    countMyObjects(),
+  ]);
 
   const { error } = await searchParams;
   const showUnauthorized = error === "no_autorizado";
@@ -86,6 +90,26 @@ export default async function DashboardPage({
           style={{ color: "var(--color-accent)" }}
         >
           Editar →
+        </span>
+      </Link>
+
+      <Link
+        href="/mis-objetos"
+        className="rounded-xl border-2 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-[var(--color-bg-alt)]"
+        style={{ borderColor: "var(--color-border)" }}
+      >
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold">Mis objetos</h2>
+          <p style={{ color: "var(--color-muted)" }}>
+            Consulta el estado de todos tus objetos publicados.
+          </p>
+        </div>
+        <span
+          className="inline-flex items-center justify-center min-w-9 h-9 px-3 rounded-full text-sm font-semibold text-white"
+          style={{ backgroundColor: "var(--color-accent)" }}
+          aria-label={`${myObjectsCount} objetos`}
+        >
+          {myObjectsCount}
         </span>
       </Link>
 
