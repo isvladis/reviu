@@ -224,6 +224,11 @@ export async function getPublicObjectDetail(
 ): Promise<PublicObjectDetail | null> {
   const supabase = await createClient();
 
+  // Query principal con el cliente del visitante: anon tiene grants completos
+  // sobre objects, categories, destinations y object_photos (migración 0001),
+  // y RLS deja ver status='published'. Profiles NO se incluye aquí porque
+  // tras la revocación del SELECT general (ADR-019/migración 0005) el JOIN
+  // con profiles falla para anon.
   const result = await supabase
     .from("objects")
     .select(
@@ -237,7 +242,6 @@ export async function getPublicObjectDetail(
       created_at,
       categories:category_id ( name ),
       destinations:destination_id ( name ),
-      profiles:owner_id ( display_name, phone, contact_email, contact_phone, contact_inapp ),
       object_photos ( storage_path, sort_order )
       `,
     )
@@ -246,7 +250,7 @@ export async function getPublicObjectDetail(
     .maybeSingle();
 
   const error = result.error;
-  const data = result.data as DetailRow | null;
+  const data = result.data as Omit<DetailRow, "profiles"> | null;
 
   if (error || !data) {
     if (process.env.NODE_ENV !== "production" && error) {
@@ -255,11 +259,25 @@ export async function getPublicObjectDetail(
     return null;
   }
 
+  // Datos del publicador: query aparte con service_role. Lleva las
+  // preferencias completas; lo que se revela después se decide en función
+  // del consentimiento y de si el visitante está autenticado.
+  const admin = createAdminClient();
+  const { data: ownerRow, error: ownerError } = await admin
+    .from("profiles")
+    .select("display_name, phone, contact_email, contact_phone, contact_inapp")
+    .eq("id", data.owner_id)
+    .maybeSingle();
+
+  if (ownerError && process.env.NODE_ENV !== "production") {
+    console.error("[getPublicObjectDetail] owner", ownerError);
+  }
+
   const category = pickOne(data.categories);
   const destination = pickOne(data.destinations);
-  const owner = pickOne(data.profiles);
+  const owner = ownerRow;
 
-  // ¿Hay sesión activa?
+  // ¿Hay sesión activa? Se consulta con el cliente con cookies del visitante.
   const {
     data: { user: viewer },
   } = await supabase.auth.getUser();
@@ -278,10 +296,9 @@ export async function getPublicObjectDetail(
       inapp = true;
     }
     if (owner.contact_email) {
-      // El email vive en auth.users; el cliente con sesión no puede consultarlo
-      // de otro usuario. Usamos service_role acotado a este caso de uso.
+      // El email vive en auth.users; lo recuperamos con service_role solo
+      // cuando el publicador ha consentido.
       try {
-        const admin = createAdminClient();
         const { data: adminData } = await admin.auth.admin.getUserById(
           data.owner_id,
         );

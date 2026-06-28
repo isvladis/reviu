@@ -24,7 +24,6 @@ export const updateProfileSchema = z.object({
     .default(null),
   contactEmail: z.coerce.boolean(),
   contactPhone: z.coerce.boolean(),
-  contactInapp: z.coerce.boolean(),
 });
 
 export type UpdateProfileInput = z.infer<typeof updateProfileSchema>;

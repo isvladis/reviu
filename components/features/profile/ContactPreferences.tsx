@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState, useState } from "react";
+import { useActionState } from "react";
 
 import {
   updateProfileAction,
@@ -14,7 +14,6 @@ type Props = {
     phone: string | null;
     contactEmail: boolean;
     contactPhone: boolean;
-    contactInapp: boolean;
   };
 };
 
@@ -25,12 +24,6 @@ export function ContactPreferences({ initial }: Props) {
     updateProfileAction,
     INITIAL,
   );
-
-  const [displayName, setDisplayName] = useState(initial.displayName);
-  const [phone, setPhone] = useState(initial.phone ?? "");
-  const [contactEmail, setContactEmail] = useState(initial.contactEmail);
-  const [contactPhone, setContactPhone] = useState(initial.contactPhone);
-  const [contactInapp, setContactInapp] = useState(initial.contactInapp);
 
   return (
     <form action={formAction} className="space-y-8">
@@ -52,8 +45,7 @@ export function ContactPreferences({ initial }: Props) {
             required
             minLength={2}
             maxLength={50}
-            value={displayName}
-            onChange={(e) => setDisplayName(e.target.value)}
+            defaultValue={initial.displayName}
             className="w-full rounded-lg border-2 p-3 text-base"
             style={{
               borderColor: "var(--color-border)",
@@ -81,6 +73,7 @@ export function ContactPreferences({ initial }: Props) {
             type="email"
             value={initial.email}
             disabled
+            readOnly
             className="w-full rounded-lg border-2 p-3 text-base opacity-70"
             style={{
               borderColor: "var(--color-border)",
@@ -109,8 +102,7 @@ export function ContactPreferences({ initial }: Props) {
             autoComplete="tel"
             maxLength={30}
             placeholder="+34 600 00 00 00"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            defaultValue={initial.phone ?? ""}
             className="w-full rounded-lg border-2 p-3 text-base"
             style={{
               borderColor: "var(--color-border)",
@@ -141,24 +133,19 @@ export function ContactPreferences({ initial }: Props) {
           name="contactEmail"
           label="Mostrar mi email a otros usuarios registrados"
           description="Tu email será visible para personas con cuenta cuando vean el detalle de tu objeto."
-          checked={contactEmail}
-          onChange={setContactEmail}
+          defaultChecked={initial.contactEmail}
         />
 
         <ToggleRow
           name="contactPhone"
           label="Mostrar mi teléfono a otros usuarios registrados"
           description="Necesitas haber introducido un teléfono arriba para activar esta opción."
-          checked={contactPhone}
-          onChange={setContactPhone}
+          defaultChecked={initial.contactPhone}
         />
 
-        <ToggleRow
-          name="contactInapp"
+        <InfoRow
           label="Permitir que me envíen mensajes por Reviu"
-          description="Próximamente: mensajería interna. De momento es un marcador de preferencia."
-          checked={contactInapp}
-          onChange={setContactInapp}
+          description="Los mensajes internos de Reviu siempre están activados: son el canal principal entre vecinos."
         />
       </section>
 
@@ -197,15 +184,19 @@ export function ContactPreferences({ initial }: Props) {
   );
 }
 
+// ---------------------------------------------------------------------------
+
 type ToggleProps = {
   name: string;
   label: string;
   description: string;
-  checked: boolean;
-  onChange: (next: boolean) => void;
+  defaultChecked: boolean;
 };
 
-function ToggleRow({ name, label, description, checked, onChange }: ToggleProps) {
+// Checkbox UNCONTROLLED: la fuente de verdad es el DOM y la lectura ocurre
+// en la Server Action vía formData.has(). Evita rarezas de sincronización
+// entre estado React y el value que el form envía al submit.
+function ToggleRow({ name, label, description, defaultChecked }: ToggleProps) {
   const id = `toggle-${name}`;
   return (
     <div
@@ -216,8 +207,7 @@ function ToggleRow({ name, label, description, checked, onChange }: ToggleProps)
         id={id}
         name={name}
         type="checkbox"
-        checked={checked}
-        onChange={(e) => onChange(e.target.checked)}
+        defaultChecked={defaultChecked}
         className="mt-1 size-5 accent-[var(--color-accent)] cursor-pointer"
       />
       <label htmlFor={id} className="flex-1 cursor-pointer space-y-1">
@@ -231,6 +221,43 @@ function ToggleRow({ name, label, description, checked, onChange }: ToggleProps)
           {description}
         </span>
       </label>
+    </div>
+  );
+}
+
+function InfoRow({
+  label,
+  description,
+}: {
+  label: string;
+  description: string;
+}) {
+  return (
+    <div
+      className="rounded-xl border-2 p-4 flex items-start gap-3"
+      style={{
+        borderColor: "var(--color-border)",
+        backgroundColor: "var(--color-bg-alt)",
+      }}
+    >
+      <span
+        className="mt-1 inline-flex items-center justify-center size-5 rounded text-white text-xs"
+        style={{ backgroundColor: "var(--color-accent)" }}
+        aria-hidden="true"
+      >
+        ✓
+      </span>
+      <div className="flex-1 space-y-1">
+        <span
+          className="block text-base font-medium"
+          style={{ color: "var(--color-text)" }}
+        >
+          {label}
+        </span>
+        <span className="block text-sm" style={{ color: "var(--color-muted)" }}>
+          {description}
+        </span>
+      </div>
     </div>
   );
 }

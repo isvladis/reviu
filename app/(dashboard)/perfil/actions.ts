@@ -28,13 +28,15 @@ export async function updateProfileAction(
   _prev: ProfileActionState,
   formData: FormData,
 ): Promise<ProfileActionState> {
+  // formData.has() es la forma fiable de leer checkboxes: el navegador
+  // OMITE por completo el campo cuando está desmarcado, así que comparar
+  // con "on" o un valor concreto puede dar falsos negativos según el
+  // navegador o el orden de los campos. has() detecta presencia directa.
   const parsed = updateProfileSchema.safeParse({
     displayName: formData.get("displayName"),
     phone: formData.get("phone"),
-    // Los checkbox no enviados en form-data → false. getAll para detectar presencia.
-    contactEmail: formData.get("contactEmail") === "on",
-    contactPhone: formData.get("contactPhone") === "on",
-    contactInapp: formData.get("contactInapp") === "on",
+    contactEmail: formData.has("contactEmail"),
+    contactPhone: formData.has("contactPhone"),
   });
 
   if (!parsed.success) {
@@ -64,6 +66,9 @@ export async function updateProfileAction(
     return { error: "Sesión expirada. Inicia sesión otra vez." };
   }
 
+  // contact_inapp se mantiene siempre en true: la mensajería interna de Reviu
+  // es el canal principal y no es desmarcable. Lo escribimos explícitamente
+  // por si algún perfil antiguo lo tuviese a false.
   const { error } = await supabase
     .from("profiles")
     .update({
@@ -71,7 +76,7 @@ export async function updateProfileAction(
       phone: data.phone,
       contact_email: data.contactEmail,
       contact_phone: data.contactPhone,
-      contact_inapp: data.contactInapp,
+      contact_inapp: true,
       updated_at: new Date().toISOString(),
     })
     .eq("id", user.id);
