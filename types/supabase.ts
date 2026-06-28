@@ -12,6 +12,7 @@ export type Json =
 
 export type ObjectStatus =
   | "draft"
+  | "pending"
   | "published"
   | "reserved"
   | "completed"

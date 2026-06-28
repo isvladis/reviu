@@ -1,0 +1,22 @@
+-- ============================================================================
+-- Reviu — Migración 0003: añade 'pending' al enum object_status
+-- ============================================================================
+-- Referencia: ARQUITECTURA.md §2.2 (object_status), ADR-017 §9.
+--
+-- Motivación:
+--   Se necesita un estado explícito para "objeto enviado por el usuario,
+--   pendiente de moderación" — distinto de 'draft' (borrador del usuario,
+--   no enviado todavía).
+--
+-- Compatibilidad con RLS existente:
+--   La policy objects_select_published_or_own ya filtra por
+--     status = 'published' or owner_id = auth.uid()
+--   → los 'pending' quedan ocultos al público y solo los ve su dueño,
+--   exactamente lo que queremos. No hace falta modificar policies.
+--
+-- Nota Postgres:
+--   ALTER TYPE ... ADD VALUE NO puede ir dentro de una transacción en
+--   versiones antiguas; usa IF NOT EXISTS (9.6+) y es idempotente.
+-- ============================================================================
+
+alter type public.object_status add value if not exists 'pending';

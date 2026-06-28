@@ -225,7 +225,9 @@ insert into public.destinations (slug, name, description, sort_order) values
 #### `objects` — objetos publicados
 
 ```sql
-create type object_status as enum ('draft','published','reserved','completed','withdrawn');
+-- 'pending' = enviado por el usuario, en cola de moderación (ADR-017).
+-- 'draft'   = borrador del usuario (aún no enviado a moderar).
+create type object_status as enum ('draft','pending','published','reserved','completed','withdrawn');
 
 create table public.objects (
   id             uuid primary key default gen_random_uuid(),
@@ -1023,6 +1025,7 @@ Formato breve para **no reabrir debates** cada sesión. Si una decisión cambia,
 | **014** | **Secretos solo por entorno; `service_role` server-only** | Evita fugas en el bundle; separación de confianza estricta. | Claves en código / en cliente. |
 | **015** _(Fase 3)_ | **PWA como evolución de la misma app**, no app nativa separada | Reutiliza el código y la arquitectura; instalable; coherente con ADR-004. | App nativa independiente. |
 | **016** | **Regiones UE en Supabase/Vercel + DPA** | Cumplimiento RGPD y minimización de transferencias internacionales. | Regiones fuera de UE por defecto. |
+| **017** _(2026-06-28)_ | **`pending` añadido a `object_status`** como estado de moderación previo a `published` | Distinguir "borrador del usuario" (`draft`) de "enviado y en cola de moderación" (`pending`). La RLS `objects_select_published_or_own` existente ya lo oculta al público sin cambios. Migración: `0003_add_pending_status.sql`. | Reutilizar `draft` para ambos (mezcla intenciones distintas: edición vs. revisión externa). |
 
 ---
 
