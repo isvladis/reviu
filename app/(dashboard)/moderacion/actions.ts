@@ -3,8 +3,8 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 
+import { createAdminClient } from "@/lib/supabase/admin";
 import { isModerator } from "@/lib/supabase/moderation";
-import { createClient } from "@/lib/supabase/server";
 import {
   approveObjectSchema,
   rejectObjectSchema,
@@ -23,12 +23,17 @@ function flattenZodErrors(errors: Record<string, string[] | undefined>) {
   return out;
 }
 
+// Las operaciones de moderación usan service_role (createAdminClient) porque
+// son tareas administrativas (ARQUITECTURA §4.2). La verificación de rol se
+// hace ANTES con isModerator() desde la sesión del usuario — el admin client
+// solo ejecuta el UPDATE una vez confirmado el permiso.
+//
+// Las policies RLS de moderación (objects_update_moderator_pending) siguen
+// existiendo como documentación de intención y como barrera si en el futuro
+// se usa el client con sesión para estas operaciones.
+
 /**
  * Aprueba un objeto pending → status 'published'.
- *
- * Cadena de defensa:
- *  1. Comprobación de rol en servidor (this function).
- *  2. RLS objects_update_moderator_pending impone la misma condición en BD.
  */
 export async function approveObjectAction(
   _prev: ModerationActionState,
@@ -45,8 +50,8 @@ export async function approveObjectAction(
     return { error: "No tienes permisos para esta acción." };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("objects")
     .update({ status: "published", rejection_reason: null })
     .eq("id", parsed.data.objectId)
@@ -83,8 +88,8 @@ export async function rejectObjectAction(
     return { error: "No tienes permisos para esta acción." };
   }
 
-  const supabase = await createClient();
-  const { error } = await supabase
+  const admin = createAdminClient();
+  const { error } = await admin
     .from("objects")
     .update({
       status: "withdrawn",
