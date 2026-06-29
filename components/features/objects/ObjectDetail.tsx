@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
+import { useFormStatus } from "react-dom";
 
 import { startConversationAction } from "@/app/(dashboard)/mensajes/actions";
 import type { PublicObjectDetail } from "@/lib/supabase/objects";
@@ -172,6 +175,20 @@ function GatedContact({ ownerName }: { ownerName: string }) {
   );
 }
 
+function StartConversationButton({ ownerName }: { ownerName: string }) {
+  const { pending } = useFormStatus();
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium text-white transition-colors cursor-pointer disabled:cursor-not-allowed disabled:opacity-70"
+      style={{ backgroundColor: "var(--color-accent)" }}
+    >
+      {pending ? "Enviando…" : `Enviar mensaje a ${ownerName}`}
+    </button>
+  );
+}
+
 function RevealedContact({ object }: { object: PublicObjectDetail }) {
   const { contact, ownerPrefs } = object;
   return (
@@ -209,13 +226,7 @@ function RevealedContact({ object }: { object: PublicObjectDetail }) {
       {contact.inapp ? (
         <form action={startConversationAction} className="mt-2">
           <input type="hidden" name="objectId" value={object.id} />
-          <button
-            type="submit"
-            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium text-white transition-colors"
-            style={{ backgroundColor: "var(--color-accent)" }}
-          >
-            Enviar mensaje a {object.ownerDisplayName}
-          </button>
+          <StartConversationButton ownerName={object.ownerDisplayName} />
         </form>
       ) : null}
     </div>
