@@ -12,6 +12,8 @@ const PROTECTED_PREFIXES = [
   "/objects",
   "/moderacion",
   "/perfil",
+  "/mensajes",
+  "/mis-objetos",
 ];
 
 // Rutas que además requieren rol de moderador (o admin).

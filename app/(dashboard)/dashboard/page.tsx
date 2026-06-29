@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 
+import { countUnreadMessages } from "@/lib/supabase/messages";
 import { countPendingObjects } from "@/lib/supabase/moderation";
 import { countMyObjects } from "@/lib/supabase/my-objects";
 import { createClient } from "@/lib/supabase/server";
@@ -27,9 +28,10 @@ export default async function DashboardPage({
 
   const name = profile?.display_name ?? "Vecino/a";
   const isMod = profile?.role === "moderator" || profile?.role === "admin";
-  const [pendingCount, myObjectsCount] = await Promise.all([
+  const [pendingCount, myObjectsCount, unreadCount] = await Promise.all([
     isMod ? countPendingObjects() : Promise.resolve(0),
     countMyObjects(),
+    countUnreadMessages(),
   ]);
 
   const { error } = await searchParams;
@@ -91,6 +93,35 @@ export default async function DashboardPage({
         >
           Editar →
         </span>
+      </Link>
+
+      <Link
+        href="/mensajes"
+        className="rounded-xl border-2 p-6 md:p-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4 transition-colors hover:bg-[var(--color-bg-alt)]"
+        style={{ borderColor: "var(--color-border)" }}
+      >
+        <div className="space-y-1">
+          <h2 className="text-xl font-semibold">Mensajes</h2>
+          <p style={{ color: "var(--color-muted)" }}>
+            Conversaciones con otras personas sobre objetos.
+          </p>
+        </div>
+        {unreadCount > 0 ? (
+          <span
+            className="inline-flex items-center justify-center min-w-9 h-9 px-3 rounded-full text-sm font-semibold text-white"
+            style={{ backgroundColor: "var(--color-accent)" }}
+            aria-label={`${unreadCount} mensajes sin leer`}
+          >
+            {unreadCount}
+          </span>
+        ) : (
+          <span
+            className="text-sm font-medium"
+            style={{ color: "var(--color-accent)" }}
+          >
+            Abrir →
+          </span>
+        )}
       </Link>
 
       <Link

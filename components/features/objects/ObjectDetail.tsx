@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 
+import { startConversationAction } from "@/app/(dashboard)/mensajes/actions";
 import type { PublicObjectDetail } from "@/lib/supabase/objects";
 import { formatRelativeDate } from "@/utils/dates";
 
@@ -206,15 +207,16 @@ function RevealedContact({ object }: { object: PublicObjectDetail }) {
       ) : null}
 
       {contact.inapp ? (
-        <button
-          type="button"
-          disabled
-          className="mt-2 inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium text-white opacity-70 cursor-not-allowed"
-          style={{ backgroundColor: "var(--color-accent)" }}
-          title="La mensajería interna llegará en una próxima actualización"
-        >
-          Enviar mensaje (próximamente)
-        </button>
+        <form action={startConversationAction} className="mt-2">
+          <input type="hidden" name="objectId" value={object.id} />
+          <button
+            type="submit"
+            className="inline-flex items-center justify-center px-5 py-2.5 rounded-lg text-sm font-medium text-white transition-colors"
+            style={{ backgroundColor: "var(--color-accent)" }}
+          >
+            Enviar mensaje a {object.ownerDisplayName}
+          </button>
+        </form>
       ) : null}
     </div>
   );
